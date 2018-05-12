@@ -8,6 +8,12 @@ import sys
 
 from keras.models import load_model
 # maybe play with making a label array with 2 columns
+# When using this copy the path to the picture you want to search in the first slot
+# and the name of the model in the second slot.
+
+# A NOTE ON MODEL NAMING CONVENTION:
+# The model has a name waldo_model-(images trained on)-(final accuracy).h5
+
 image_path = sys.argv[1]
 model_arg = sys.argv[2]
 
@@ -69,6 +75,9 @@ def predict_function(model, x):
 
 # This loads the saved trained model that was passed into in argv[2].
 trained_model = load_model(model_arg)
+
+# Prints the model summary just for looking at.
+trained_model.summary()
 
 
 get_best_bounding_box(image_path, trained_model)
