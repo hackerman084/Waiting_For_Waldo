@@ -105,7 +105,7 @@ for index in range(1, len(sys.argv)):
                 # we need to make more using various transformations and rotations
                 # each image in the waldo image folder becomes 8 images after this convolution
                 # the original image + 7 altered images.
-
+'''
                 if folder_name == 'waldo':
                 
                     # Rotating +90, +180, +270
@@ -149,8 +149,7 @@ for index in range(1, len(sys.argv)):
                     
             else:
                 continue
-
-
+'''
 # Casting the lists as numpy arrays
 x_data_set = np.asarray(x_data_set)
 y_data_set = np.asarray(y_data_set)
@@ -226,7 +225,7 @@ Dense_Layer_3 = model.add(Dense(2, activation='softmax'))
 # ====== HYPER-PARAMETERS ======
 # There was a problem with memory consumption having to do with the batch size.
 # batch_size appears to be inversely proportional to the memory used. High batch = low memory usage.
-batch_size = 300
+batch_size = 50
 epochs = 30         # A number between 20 to 30 produces a high accuracy model that is not over-trained.
 
 

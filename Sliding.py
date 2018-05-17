@@ -27,11 +27,8 @@ def get_best_bounding_box(image, model, step=4):
 
     # Create a black image
 
-
-
-
-    cv.imshow('WORK YOU FUCK!', mask)
-    cv.waitKey(0)
+    # cv.imshow('WORK YOU FUCK!', mask)
+    # cv.waitKey(0)
     
     # initializing vars
     # best box does not work because the neural network is too well trained on very specific examples of waldo.
@@ -44,17 +41,42 @@ def get_best_bounding_box(image, model, step=4):
             # compute the (top, left, bottom, right) of the bounding box
             box = (top, left, top + WINDOW_SIZE, left + WINDOW_SIZE)
 
-            # crop the original image
+            # Doing masking stuff ie making the gray scale alpha mask that will highlight the current search box:
+            color = 100
+            mask = np.full((y, x, 3), (color, color, color), dtype=np.uint8)
+            cv.rectangle(mask, (box[1], box[2]), (box[3], box[0]), (255, 255, 255), -1)
+
+            # Creating the black background image:
+            background = np.zeros((y, x, 3), np.uint8)
+
+            # Convert uint8 to float
+            # The foreground should be the black image that will be shown though by applying an alpha mask.
+            foreground = img.astype(float)
+            background = background.astype(float)
+
+            # Normalize the alpha mask to keep intensity between 0 and 1
+            alpha = mask.astype(float) / 255
+
+            # Multiply the foreground with the alpha matte
+            foreground = cv.multiply(alpha, foreground)
+
+            # Multiply the background with ( 1 - alpha )
+            background = cv.multiply(1.0 - alpha, background)
+
+            # Add the masked foreground and background.
+            outImage = cv.add(foreground, background)
+
+            # Display image
+            cv.imshow("outImg", outImage / 255)
+            # cv.waitKey(10)
+
+            # shows the current window that is being looked at by the model.
+            # cv.imshow('IMAGE', img)
+
+            # crop the original image to do the waldo searching
             cropped_img = img[box[0]:box[2], box[1]:box[3]]
             # print(cropped_img.shape)
             # print('predicting for box:')
-
-            # Doing masking stuff:
-            mask = np.zeros((y, x, 3), np.uint8)
-            cv.rectangle(mask, (0, 0), (128, 128), (255, 255, 255), -1)
-
-            # shows the current window that is being looked at by the model.
-            cv.imshow('IMAGE', img)
 
             # cropped_img = cv.resize(cropped_img, dsize=(64, 64), interpolation=cv.INTER_LANCZOS4)
 
@@ -66,8 +88,8 @@ def get_best_bounding_box(image, model, step=4):
 
             # These are the individual values returned by box_prob.
             # NOTE: the values are stored in a column vector.
-            first = box_prob[:, 1]
-            second = box_prob[:, 0]
+            first = box_prob[:, 0]
+            second = box_prob[:, 1]
 
             # Checking to confirm that the vector received by box_prob suggests that there is a waldo.
             # NOTE: The expected value for a waldo is [0,1]
